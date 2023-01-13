@@ -27,7 +27,7 @@ CREATE TABLE User (
 
 CREATE TABLE Lobby (
     id INTEGER PRIMARY KEY,
-    creationDate DATETIME,
+    creationDate VARCHAR(100),
     privateCode TEXT,
     visibility INTEGER,
     id_user INTEGER NOT NULL,
@@ -35,7 +35,7 @@ CREATE TABLE Lobby (
 );
 
 
-create table Questions(
+create table Question(
   id INTEGER NOT NULL auto_increment PRIMARY KEY,
   id_user INTEGER NOT NULL,
   description VARCHAR(200),
@@ -49,17 +49,17 @@ create table Questions(
 );
 
 
-CREATE TABLE Game (
+CREATE TABLE Game(
     id_user INTEGER NOT NULL,
     id_lobby INTEGER NOT NULL,
     id_question INTEGER NOT NULL,
-    time DATETIME,
+    time VARCHAR(100),
     success INTEGER,
     FOREIGN KEY (id_user) REFERENCES User(id),
     FOREIGN KEY (id_lobby) REFERENCES Lobby(id),
     FOREIGN KEY (id_question) REFERENCES Question(id)
 );
-ALTER TABLE Game ADD CONSTRAINT game_id PRIMARY KEY (userId, lobbyId,questionId);
+ALTER TABLE Game ADD CONSTRAINT game_id PRIMARY KEY (id_user, id_lobby,id_question);
 
 
 create table rateQuestion(
