@@ -24,7 +24,6 @@ class Game(models.Model):
 class League(models.Model):
     name = models.CharField(max_length=25, blank=True, null=True)
     minelo = models.IntegerField(db_column='minElo', blank=True, null=True)  # Field name made lowercase.
-    gameelo = models.IntegerField(db_column='gameElo', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
         managed = False
@@ -32,7 +31,6 @@ class League(models.Model):
 
 
 class Lobby(models.Model):
-    id = models.IntegerField(primary_key=True)
     creationdate = models.CharField(db_column='creationDate', max_length=100, blank=True, null=True)  # Field name made lowercase.
     privatecode = models.TextField(db_column='privateCode', blank=True, null=True)  # Field name made lowercase.
     visibility = models.IntegerField(blank=True, null=True)
@@ -59,15 +57,13 @@ class Question(models.Model):
 
 
 class User(models.Model):
-    id = models.IntegerField(primary_key=True)
     id_league = models.ForeignKey(League, models.DO_NOTHING, db_column='id_league')
     username = models.CharField(max_length=20, blank=True, null=True)
     email = models.CharField(max_length=100, blank=True, null=True)
-    password = models.IntegerField(blank=True, null=True)
+    pass_field = models.CharField(db_column='pass', max_length=100, blank=True, null=True)  # Field renamed because it was a Python reserved word.
     tokenpass = models.CharField(db_column='tokenPass', max_length=100, blank=True, null=True)  # Field name made lowercase.
     tokensession = models.CharField(db_column='tokenSession', max_length=100, blank=True, null=True)  # Field name made lowercase.
     elo = models.IntegerField(blank=True, null=True)
-    eloquest = models.IntegerField(db_column='eloQuest', blank=True, null=True)  # Field name made lowercase.
     creationdate = models.CharField(db_column='creationDate', max_length=100, blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
