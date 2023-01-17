@@ -76,6 +76,12 @@ paths:
       summary: Update a user
       description: Update a user
       parameters:
+        - name: sesion-token
+          in: header
+          description: Sesion token
+          required: true
+          schema:
+            type: string
         - name: username
           in: query
           description: The user name to update (sesion token in local-storage is required)
@@ -153,7 +159,7 @@ paths:
               content:
                 application/json:
                   schema:
-                    $ref: '#/components/schemas/User-info' 
+                    $ref: '#/components/schemas/Users-names' 
             '400':
               description: Bad Request - Forget or incorrect params
               
@@ -221,6 +227,12 @@ paths:
       summary: Get a especific user info
       description: Get a especific user info
       parameters:
+        - name: sesion-token
+          in: header
+          description: Sesion token
+          required: true
+          schema:
+            type: string
         - name: name
           in: path
           description: username
@@ -243,6 +255,13 @@ paths:
         - questions
       summary: Get 4 questions info
       description: Get 4 questions info
+      parameters:
+        - name: sesion-token
+          in: header
+          description: Sesion token
+          required: true
+          schema:
+            type: string
       responses:
             '200':
               description: Questions getted ( array of 4 elements )
