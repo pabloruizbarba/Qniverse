@@ -5,28 +5,27 @@ use qniverse;
 create table League (
   id INTEGER NOT NULL auto_increment PRIMARY KEY,
   name VARCHAR(25),
-  minElo INTEGER,
-  gameElo INTEGER
+  minElo INTEGER
 );
 
 
 CREATE TABLE User (
-  id INTEGER PRIMARY KEY NOT NULL,
-  id_league INTEGER NOT NULL,
+  id INTEGER NOT NULL auto_increment PRIMARY KEY,
+  id_league INTEGER,
   username VARCHAR(20),
   email VARCHAR(100),
-  password INTEGER,
+  pass VARCHAR(100),
   tokenPass VARCHAR(100),
   tokenSession VARCHAR(100),
   elo INTEGER,
-  eloQuest INTEGER,
+  -- eloQuest INTEGER,
   creationDate VARCHAR(100),
   FOREIGN KEY (id_league) REFERENCES League(id) 
 );
 
 
 CREATE TABLE Lobby (
-    id INTEGER PRIMARY KEY,
+    id INTEGER NOT NULL auto_increment PRIMARY KEY,
     creationDate VARCHAR(100),
     privateCode TEXT,
     visibility INTEGER,
@@ -72,3 +71,29 @@ create table rateQuestion(
 
 
 ALTER TABLE rateQuestion ADD CONSTRAINT rate PRIMARY KEY (id_user, id_question);
+
+
+
+
+-----------------------------      EXAMPLE DATA FOR DEVELOP     --------------------------------
+
+
+-- Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune
+insert into League values(1, "Mercury", 1000);
+insert into League values(2, "Venus", 2000);
+insert into League values(3, "Earth", 3000);
+insert into League values(4, "Mars", 4000);
+insert into League values(5, "Jupiter", 5000);
+insert into League values(6, "Saturn", 6000);
+insert into League values(7, "Uranus", 7000);
+insert into League values(8, "Neptune", 8000);
+
+insert into User values(0, 3, "q-angel", "angel@angel.angel", "qniverse", "1234", "1234", 3000, "17/01/2023");
+insert into User values(0, 3, "q-cesar", "cesar@cesar.cesar", "qniverse", "1234", "1234", 3000, "17/01/2023");
+insert into User values(0, 3, "q-pablo", "pablo@pablo.pablo", "qniverse", "1234", "1234", 3000, "17/01/2023");
+insert into User values(0, 3, "q-adrian", "adrian@adrian.adrian", "qniverse", "1234", "1234", 3000, "17/01/2023");
+
+insert into Question values(1, 1, "Cuánto es 5+5", "10", "5", "15", "20", 1, null);
+insert into Question values(2, 2, "Qué hecho histórico corresponde al día D?", "Desembarco de Normandía", "Liberarión de París", "Rendición de los Nazis", "Bombardeo sobre Londres", 1, null);
+insert into Question values(3, 3, "Qué líquido suele ser utilizado para purificar cañerías tapadas?", "Alcohol etílico", "Ácido Hialuronico", "Manaos", "Soda cáustica", 3, null);
+insert into Question values(4, 4, "Qué celebran los cristianos el 25 de diciembre?", "La muerte de Jesús", "El nacimiento de Jesús", "La resurreción de Jesús", "La crucifixión de Jesús", 2, null);
