@@ -62,7 +62,7 @@ def register_user(request):
 
         return JsonResponse({"created_user": "ok"}, status=201)
     except Exception as e:
-        print(json.loads(request.body))
+        print(e)
 
 
 @csrf_exempt
