@@ -66,11 +66,10 @@ def register_user(request):
 
 
 @csrf_exempt
-def addQuestion(request):
+def add_question(request):
     """Add a new question to database"""
     
     token = request.headers.get('Auth-Token')
-    print(token)
     try: 
         data = json.loads(request.body)
     except json.decoder.JSONDecodeError:
@@ -78,7 +77,6 @@ def addQuestion(request):
     try:
         tokenDB = User.objects.get(tokensession=token)
     except Exception as e: 
-        print(e)
         return JsonResponse({'error': 'Bad request - Missed or incorrect params'}, status=400)
     if not token or token != tokenDB.tokensession:
         # Invalid token, return 401 error
@@ -100,3 +98,4 @@ def addQuestion(request):
         # If the request is not of type POST...
         else:
             return JsonResponse({'error': 'Bad request - Missed or incorrect params'}, status=400)
+
