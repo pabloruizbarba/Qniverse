@@ -61,3 +61,39 @@ def register_user(request):
         return JsonResponse({"created_user": "ok"})
     except Exception as e:
         print(e)
+
+
+@csrf_exempt
+def questionsToValidate(request):
+    """Get 4 questions from database"""
+
+    response_questions = []
+    data = json.loads(request.body)
+
+    token = request.headers.get('Auth-Token') # get the token of user in header request
+
+    questions = Question.objects.all() # get all the questions in DataBase
+
+    # SAVE 4 (or less in case of no more) info questions in a array
+    for i in range(int(data["index_question"]), int(data["index_question"]) + 4):
+
+        if i == len(questions): # check if there is no more questions in DB
+            break
+
+        question = {
+            "description": questions[i].description,
+            "answer1": questions[i].answer1,
+            "answer2": questions[i].answer2,
+            "answer3": questions[i].answer3,
+            "answer4": questions[i].answer4,
+            "correctAnswer": questions[i].correctanswer,
+            "image": questions[i].image if questions[i].image else "",
+            "upVotes": questions[i].upvotes,
+            "downVotes": questions[i].downvotes,
+            "activatedInGame": questions[i].activatedingame
+        }
+        response_questions.append(question)
+
+
+
+    return JsonResponse({"question": response_questions}, safe=False, json_dumps_params={'ensure_ascii': False}) # send questions in utf-8
