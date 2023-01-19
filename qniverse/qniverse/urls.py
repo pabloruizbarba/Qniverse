@@ -23,5 +23,5 @@ urlpatterns = [
     path('v1/users/', views.register_user),
     path('admin/', admin.site.urls),
     path('v1/sessions/', views.login),
-    path('v1/questions-to-validate', questionsToValidate)
+    path('v1/questions-to-validate/', views.questionsToValidate),
 ]
