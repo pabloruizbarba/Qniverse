@@ -8,7 +8,6 @@
 from django.db import models
 import bcrypt
 
-
 class Game(models.Model):
     id_user = models.OneToOneField('User', models.DO_NOTHING, db_column='id_user', primary_key=True)
     id_lobby = models.ForeignKey('Lobby', models.DO_NOTHING, db_column='id_lobby')
@@ -51,6 +50,9 @@ class Question(models.Model):
     answer4 = models.CharField(max_length=50, blank=True, null=True)
     correctanswer = models.IntegerField(db_column='correctAnswer', blank=True, null=True)  # Field name made lowercase.
     image = models.CharField(max_length=200, blank=True, null=True)
+    upvotes = models.IntegerField(db_column='upVotes', blank=True, null=True)  # Field name made lowercase.
+    downvotes = models.IntegerField(db_column='downVotes', blank=True, null=True)  # Field name made lowercase.
+    activatedingame = models.IntegerField(db_column='activatedInGame', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
         managed = False
@@ -58,7 +60,7 @@ class Question(models.Model):
 
 
 class User(models.Model):
-    id_league = models.ForeignKey(League, models.DO_NOTHING, db_column='id_league')
+    id_league = models.ForeignKey(League, models.DO_NOTHING, db_column='id_league', blank=True, null=True)
     username = models.CharField(max_length=20, blank=True, null=True)
     email = models.CharField(max_length=100, blank=True, null=True)
     pass_field = models.CharField(db_column='pass', max_length=100, blank=True, null=True)  # Field renamed because it was a Python reserved word.
@@ -67,15 +69,16 @@ class User(models.Model):
     elo = models.IntegerField(blank=True, null=True)
     creationdate = models.CharField(db_column='creationDate', max_length=100, blank=True, null=True)  # Field name made lowercase.
 
+    class Meta:
+        managed = False
+        db_table = 'User'
+        
     def encrypt_password(self, raw_password):
         return bcrypt.hashpw(raw_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
     def check_password(self, raw_password):
         return bcrypt.checkpw(raw_password.encode('utf-8'), self.pass_field.encode('utf-8'))
 
-    class Meta:
-        managed = False
-        db_table = 'User'
 
 
 class Ratequestion(models.Model):
