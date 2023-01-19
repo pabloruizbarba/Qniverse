@@ -22,5 +22,6 @@ from webserviceapp import views
 urlpatterns = [
     path('v1/users/', views.register_user),
     path('v1/sessions/', views.login_user),
+    path('v1/questions/',views.addQuestion),
     path('admin/', admin.site.urls),
 ]

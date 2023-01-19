@@ -1,6 +1,6 @@
 from django.http import HttpResponse, JsonResponse
 import jwt
-from webserviceapp.models import User, League
+from webserviceapp.models import User, League, Question
 from django.views.decorators.csrf import csrf_exempt
 import json
 import bcrypt
@@ -25,7 +25,7 @@ def login_user(request):
 
         if user.check_password(data['password']):
             token = jwt.encode({'user_id': user.id}, 'secret', algorithm='HS256')
-            user.tokensession = token
+            user.tokenSession = token
             user.save()
             return JsonResponse(
                 {
@@ -63,3 +63,40 @@ def register_user(request):
         return JsonResponse({"created_user": "ok"}, status=201)
     except Exception as e:
         print(json.loads(request.body))
+
+
+@csrf_exempt
+def addQuestion(request):
+    """Add a new question to database"""
+    
+    token = request.headers.get('Auth-Token')
+    print(token)
+    try: 
+        data = json.loads(request.body)
+    except json.decoder.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+    try:
+        tokenDB = User.objects.get(tokensession=token)
+    except Exception as e: 
+        print(e)
+        return JsonResponse({'error': 'Bad request - Missed or incorrect params'}, status=400)
+    if not token or token != tokenDB.tokensession:
+        # Invalid token, return 401 error
+        return JsonResponse({'error': 'Unauthorized - User not logged'}, status=401)
+    else:
+        if request.method == 'POST':  
+            question = Question() 
+            question.id_user =  User.objects.get(id=data['id_user'])
+            question.description = data['description']
+            question.answer1 = data['answer1']
+            question.answer2 = data['answer2']
+            question.answer3 = data['answer3']
+            question.answer4 = data['answer4']
+            question.correctanswer = data['correctAnswer']
+            if 'image' in data:
+                question.image = data['image']
+            question.save()
+            return JsonResponse({"Question created":"201"})
+        # If the request is not of type POST...
+        else:
+            return JsonResponse({'error': 'Bad request - Missed or incorrect params'}, status=400)
