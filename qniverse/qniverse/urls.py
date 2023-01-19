@@ -23,5 +23,6 @@ urlpatterns = [
     path('v1/users/', views.register_user),
     path('v1/sessions/', views.login_user),
     path('v1/questions/', views.add_question),
+    path('v1/questions-to-validate/', views.questionsToValidate),
     path('admin/', admin.site.urls),
 ]
