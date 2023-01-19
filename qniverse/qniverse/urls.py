@@ -17,7 +17,10 @@ from django.contrib import admin
 from django.urls import path
 import webserviceapp.views as views
 
+from webserviceapp import views
+
 urlpatterns = [
+    path('v1/users/', views.register_user),
     path('admin/', admin.site.urls),
     path('v1/sessions/', views.login),
 ]

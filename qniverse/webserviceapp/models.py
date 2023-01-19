@@ -6,6 +6,7 @@
 #   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
+import bcrypt
 
 
 class Game(models.Model):
@@ -65,6 +66,12 @@ class User(models.Model):
     tokensession = models.CharField(db_column='tokenSession', max_length=100, blank=True, null=True)  # Field name made lowercase.
     elo = models.IntegerField(blank=True, null=True)
     creationdate = models.CharField(db_column='creationDate', max_length=100, blank=True, null=True)  # Field name made lowercase.
+
+    def encrypt_password(self, raw_password):
+        return bcrypt.hashpw(raw_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+
+    def check_password(self, raw_password):
+        return bcrypt.checkpw(raw_password.encode('utf-8'), self.pass_field.encode('utf-8'))
 
     class Meta:
         managed = False
