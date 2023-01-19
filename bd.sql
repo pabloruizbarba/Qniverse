@@ -44,6 +44,9 @@ create table Question(
   answer4 VARCHAR(50),
   correctAnswer INTEGER,
   image VARCHAR(200),
+  upVotes INTEGER,
+  downVotes INTEGER,
+  activatedInGame BOOLEAN,
   FOREIGN KEY (id_user) REFERENCES User(id)
 );
 
@@ -64,7 +67,7 @@ ALTER TABLE Game ADD CONSTRAINT game_id PRIMARY KEY (id_user, id_lobby,id_questi
 create table rateQuestion(
   id_user INTEGER NOT NULL,
   id_question INTEGER NOT NULL,
-  rating bool,
+  rating boolean,
   FOREIGN KEY (id_user) REFERENCES User(id),
   FOREIGN KEY (id_question) REFERENCES Question(id)
 );
@@ -93,7 +96,7 @@ insert into User values(0, 3, "q-cesar", "cesar@cesar.cesar", "qniverse", "1234"
 insert into User values(0, 3, "q-pablo", "pablo@pablo.pablo", "qniverse", "1234", "1234", 3000, "17/01/2023");
 insert into User values(0, 3, "q-adrian", "adrian@adrian.adrian", "qniverse", "1234", "1234", 3000, "17/01/2023");
 
-insert into Question values(1, 1, "Cuánto es 5+5", "10", "5", "15", "20", 1, null);
-insert into Question values(2, 2, "Qué hecho histórico corresponde al día D?", "Desembarco de Normandía", "Liberarión de París", "Rendición de los Nazis", "Bombardeo sobre Londres", 1, null);
-insert into Question values(3, 3, "Qué líquido suele ser utilizado para purificar cañerías tapadas?", "Alcohol etílico", "Ácido Hialuronico", "Manaos", "Soda cáustica", 3, null);
-insert into Question values(4, 4, "Qué celebran los cristianos el 25 de diciembre?", "La muerte de Jesús", "El nacimiento de Jesús", "La resurreción de Jesús", "La crucifixión de Jesús", 2, null);
+insert into Question values(1, 1, "Cuánto es 5+5", "10", "5", "15", "20", 1, null, 10, 5, True);
+insert into Question values(2, 2, "Qué hecho histórico corresponde al día D?", "Desembarco de Normandía", "Liberarión de París", "Rendición de los Nazis", "Bombardeo sobre Londres", 1, null, 5, 5, False);
+insert into Question values(3, 3, "Qué líquido suele ser utilizado para purificar cañerías tapadas?", "Alcohol etílico", "Ácido Hialuronico", "Manaos", "Soda cáustica", 3, null, 10, 5, True);
+insert into Question values(4, 4, "Qué celebran los cristianos el 25 de diciembre?", "La muerte de Jesús", "El nacimiento de Jesús", "La resurreción de Jesús", "La crucifixión de Jesús", 2, null, 15, 5, True);
