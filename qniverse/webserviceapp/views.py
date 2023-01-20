@@ -91,6 +91,9 @@ def add_question(request):
             question.answer3 = data['answer3']
             question.answer4 = data['answer4']
             question.correctanswer = data['correctAnswer']
+            question.upvotes = 0
+            question.downvotes = 0
+            question.activatedingame = False
             if 'image' in data:
                 question.image = data['image']
             question.save()
@@ -99,3 +102,36 @@ def add_question(request):
         else:
             return JsonResponse({'error': 'Bad request - Missed or incorrect params'}, status=400)
 
+
+
+@csrf_exempt
+def update_user(request):
+    """Update username of current user"""
+    
+    token = request.headers.get('Auth-Token')
+    try: 
+        data = json.loads(request.body)
+    except json.decoder.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+    try:
+        tokenDB = User.objects.get(tokensession=token)
+    except Exception as e: 
+        return JsonResponse({'error': 'Bad request - Missed or incorrect params'}, status=400)
+    if not token or token != tokenDB.tokensession:
+        # Invalid token, return 401 error
+        return JsonResponse({'error': 'Unauthorized - User not logged'}, status=401)
+    else:
+        if request.method == 'POST':
+            user = User()
+            new_name = ""
+            while new_name == "":
+                new_name = data['username']
+                n = user.objects.filter(username=new_name)
+                if n.count() > 0:
+                    return JsonResponse({'error': 'username already exists'}, status=409)
+                    new_name = ""  
+                else: 
+                    user.objects.filter(tokensession=token).update(username=new_name)
+        # If the request is not of type POST...
+        else:
+            return JsonResponse({'error': 'Bad request - Missed or incorrect params'}, status=400)

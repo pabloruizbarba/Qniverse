@@ -51,6 +51,10 @@ class Question(models.Model):
     answer4 = models.CharField(max_length=50, blank=True, null=True)
     correctanswer = models.IntegerField(db_column='correctAnswer', blank=True, null=True)  # Field name made lowercase.
     image = models.CharField(max_length=200, blank=True, null=True)
+    upvotes = models.IntegerField(db_column='upVotes', blank=True, null=True)  # Field name made lowercase.
+    downvotes = models.IntegerField(db_column='downVotes', blank=True, null=True)  # Field name made lowercase.
+    activatedingame = models.IntegerField(db_column='activatedInGame', blank=True, null=True)  # Field name made lowercase.
+
 
     class Meta:
         managed = False
