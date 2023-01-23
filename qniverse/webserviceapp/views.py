@@ -85,12 +85,13 @@ def add_question(request):
         if request.method == 'POST':  
             question = Question() 
             question.id_user =  User.objects.get(id=data['id_user'])
-            question.description = data['description']
+            question.description = data['question']
             question.answer1 = data['answer1']
             question.answer2 = data['answer2']
             question.answer3 = data['answer3']
             question.answer4 = data['answer4']
-            question.correctanswer = data['correctAnswer']
+            question.correctanswer = data['correct-answer']
+            question.image = data['correct-image']
             question.upvotes = 0
             question.downvotes = 0
             question.activatedingame = False
@@ -105,33 +106,30 @@ def add_question(request):
 
 
 @csrf_exempt
-def update_user(request):
-    """Update username of current user"""
-    
-    token = request.headers.get('Auth-Token')
-    try: 
-        data = json.loads(request.body)
-    except json.decoder.JSONDecodeError:
-        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+def updateUser(request):
+    """Update username"""
+
+    data = json.loads(request.body)
+    user = User()
+
+
+    # CHECK IF REQUEST IS PROPERLY FORMULATED
+    if not "username" in data:
+        return JsonResponse({"status": "400", "description": "Bad Request - Forget or incorrect params"})
+
+
+    # CHECK IF USER IS LOG IN
     try:
-        tokenDB = User.objects.get(tokensession=token)
-    except Exception as e: 
-        return JsonResponse({'error': 'Bad request - Missed or incorrect params'}, status=400)
-    if not token or token != tokenDB.tokensession:
-        # Invalid token, return 401 error
-        return JsonResponse({'error': 'Unauthorized - User not logged'}, status=401)
-    else:
-        if request.method == 'POST':
-            user = User()
-            new_name = ""
-            while new_name == "":
-                new_name = data['username']
-                n = user.objects.filter(username=new_name)
-                if n.count() > 0:
-                    return JsonResponse({'error': 'username already exists'}, status=409)
-                    new_name = ""  
-                else: 
-                    user.objects.filter(tokensession=token).update(username=new_name)
-        # If the request is not of type POST...
-        else:
-            return JsonResponse({'error': 'Bad request - Missed or incorrect params'}, status=400)
+        user = User.objects.get(tokensession=request.headers.get('Auth-Token'))
+    except:
+        return JsonResponse({"status": "401", "description": "Unauthorized - User not logged"})
+
+
+    # CHECK IF USER ALREADY EXISTS
+    if User.objects.get(username=data['username']):
+        return JsonResponse({"status": "409", "description": "Username already in use"})
+
+
+    user.username = data['username']
+    user.save()
+    return JsonResponse({"status": "200", "description": "Updated successfully"})
