@@ -131,3 +131,27 @@ def questionsToValidate(request):
         response_questions.append(question)
 
     return JsonResponse({"question": response_questions}, safe=False, json_dumps_params={'ensure_ascii': False}) # send questions in utf-8
+
+
+@csrf_exempt
+def get_user(request, name):
+    """Get specific user info"""
+
+    if request.method != 'GET':
+        return HttpResponse("Method Not Allowed", status=405)
+
+    # CHECK IF USER IS LOG IN
+    try:
+        User.objects.get(tokensession=request.headers.get('Auth-Token'))
+    except:
+        return HttpResponse("Unauthorized - User not logged", status=401)
+
+
+    # CHECK IF USER EXIST IN DATABASE
+    try:
+        user = User.objects.get(username=name)
+    except:
+        return HttpResponse("User not found", status=404)
+
+
+    return JsonResponse({"username": user.username, "elo": user.elo, "eloPlanet": user.id_league.name, "editable": False}, status=200)
