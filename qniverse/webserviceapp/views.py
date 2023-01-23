@@ -2,8 +2,10 @@ from django.http import HttpResponse, JsonResponse
 import jwt
 from webserviceapp.models import User, League, Question
 from django.views.decorators.csrf import csrf_exempt
+from django.core.mail import send_mail
 import json
 import bcrypt
+import random
 
 
 @csrf_exempt
@@ -131,3 +133,44 @@ def questionsToValidate(request):
         response_questions.append(question)
 
     return JsonResponse({"question": response_questions}, safe=False, json_dumps_params={'ensure_ascii': False}) # send questions in utf-8
+
+
+@csrf_exempt
+def password_recovery(request):
+    """Forgot password, send an email with recovery code generated"""
+
+    data = json.loads(request.body)
+    user = User()
+
+    if not "email" in data:
+        return JsonResponse({"status": "400", "description": "Bad Request - Forget or incorrect params"}, status=400)
+
+    try:
+        user = User.objects.get(email=data['email'])
+    except:
+        return JsonResponse({"status": "404", "description": "Email not found"}, status=404)
+
+    # GENERATE A CODE (THATS IS NOT IN THE DATABASE)
+    while True:
+        try:
+            code = str(random.randint(100000, 999999)) # 6 digits number 
+            User.objects.get(tokenpass=code)
+        except:
+            break
+
+    # SAVE TOKEN PASS
+    user.tokenpass = code
+    user.save()
+    
+    # SEND EMAIL
+    subject = 'Qniverse Password Reset'
+    message = f'''
+    \nClick in the next link to reset your password:
+    \n
+    https://qniverse.com/update-password/{code}
+    '''
+    from_email = 'qniverseemail@gmail.com'
+    recipient_list = [data["email"]]
+    send_mail(subject, message, from_email, recipient_list)
+
+    return JsonResponse({"status": "200", "description": "Email sent successfully"}, status=200)
