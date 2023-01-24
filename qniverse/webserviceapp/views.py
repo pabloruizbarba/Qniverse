@@ -77,39 +77,53 @@ def create_or_get_users(request):
             return HttpResponse("Bad Request - Forget or incorrect params", status=400)
 
 
+
 @csrf_exempt
 def login_user(request):
-    """A registered user can login into the app"""
+    """Create a session"""
+
+    data = json.loads(request.body)
+    user = User()
 
     if request.method != 'POST':
-        return None
+        return HttpResponse("Method Not Allowed", status=405)
 
+    # CHECK IF REQUEST IS PROPERLY FORMULATED
+    if not "username" in data or not "password" in data:
+        return HttpResponse("Bad Request - Forget or incorrect params", status=400)
+    
+
+    # IF REQUEST IS WITH USERNAME
     try:
-        data = json.loads(request.body)
+        User.objects.get(username=data["username"])
 
-        if 'email' in data:
-            user = User.objects.get(email=data['email'])
-        elif 'username' in data:
-            user = User.objects.get(username=data['username'])
-        else:
-            return JsonResponse({'error': 'Missing parameters'}, status=400)
-
+        user = User.objects.get(username=data["username"])
         if user.check_password(data['password']):
-            token = jwt.encode({'user_id': user.id}, 'secret', algorithm='HS256')
-            user.tokenSession = token
+            user.tokensession = jwt.encode({'user_id': user.id}, 'secret', algorithm='HS256')
             user.save()
-            return JsonResponse(
-                {
-                    'session_token': user.tokensession,
-                    'elo': user.elo,
-                    'username': user.username
-                },
-                status=201
-            )
 
-        return JsonResponse({'error': 'Incorrect password'}, status=401)
-    except Exception as e:
-        print(e)
+            return JsonResponse({"username": user.username, "elo": user.elo, "session_token": user.tokensession}, status=201)
+        else:
+            return HttpResponse("Incorrect password", status=401)
+    except:
+
+
+        # IF REQUEST IS WITH EMAIL
+        try:
+            User.objects.get(email=data["username"])
+
+            user = User.objects.get(email=data["username"])
+            if user.check_password(data['password']):
+                user.tokensession = jwt.encode({'user_id': user.id}, 'secret', algorithm='HS256')
+                user.save()
+
+                return JsonResponse({"username": user.username, "elo": user.elo, "session_token": user.tokensession}, status=201)
+            else:
+                return HttpResponse("Incorrect password", status=401)
+
+        except:
+            return HttpResponse("User or email dont exists", status=404)
+
 
 
 @csrf_exempt

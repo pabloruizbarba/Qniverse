@@ -22,7 +22,7 @@ from webserviceapp import views
 urlpatterns = [
     path('v1/users', views.create_or_get_users),
     path('v1/users/<str:name>', views.get_user),
-    path('v1/sessions/', views.login_user),
+    path('v1/sessions', views.login_user),
     path('v1/questions/', views.add_question),
     path('v1/password-recovery', views.password_recovery),
     path('admin/', admin.site.urls),
