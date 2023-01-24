@@ -139,18 +139,21 @@ def questionsToValidate(request):
 def password_recovery(request):
     """Forgot password, send an email with recovery code generated"""
 
+    if request.method != 'PUT':
+        return HttpResponse("Method Not Allowed", status=405)
+
     data = json.loads(request.body)
     user = User()
 
     if not "email" in data:
-        return JsonResponse({"status": "400", "description": "Bad Request - Forget or incorrect params"}, status=400)
+        return HttpResponse("Bad Request - Forget or incorrect params", status=400)
 
     try:
         user = User.objects.get(email=data['email'])
     except:
-        return JsonResponse({"status": "404", "description": "Email not found"}, status=404)
+        return HttpResponse("Email not found", status=404)
 
-    # GENERATE A CODE (THATS IS NOT IN THE DATABASE)
+    # Generate a code that is not in db
     while True:
         try:
             code = str(random.randint(100000, 999999)) # 6 digits number 
@@ -173,4 +176,4 @@ def password_recovery(request):
     recipient_list = [data["email"]]
     send_mail(subject, message, from_email, recipient_list)
 
-    return JsonResponse({"status": "200", "description": "Email sent successfully"}, status=200)
+    return HttpResponse("Email sent successfully", status=200)
