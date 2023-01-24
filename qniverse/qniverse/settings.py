@@ -137,3 +137,14 @@ PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
     'django.contrib.auth.hashers.Argon2PasswordHasher',
 ]
+
+# EMAIL
+EMAIL_BACKEND="django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST="smtp.gmail.com"
+EMAIL_USE_TLS=True
+EMAIL_PORT=587
+EMAIL_HOST_USER="qniverseemail"
+# Password used by django (generate by googleGmail)
+EMAIL_HOST_PASSWORD="almjaerffdpkgxyi"
+
+# real password for loggin in gmail `qniverse12.` (without quotes)

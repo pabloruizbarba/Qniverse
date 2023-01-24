@@ -24,5 +24,10 @@ urlpatterns = [
     path('v1/users/<str:name>', views.get_user),
     path('v1/sessions/', views.login_user),
     path('v1/questions/', views.add_question),
+<<<<<<< HEAD
+=======
+    path('v1/questions-to-validate/', views.questionsToValidate),
+    path('v1/password-recovery', views.password_recovery),
+>>>>>>> api_password-recovery
     path('admin/', admin.site.urls),
 ]

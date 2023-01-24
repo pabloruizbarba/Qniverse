@@ -4,8 +4,6 @@ from webserviceapp.models import User, League, Question
 from django.views.decorators.csrf import csrf_exempt
 import json
 import bcrypt
-from datetime import datetime
-
 
 @csrf_exempt
 def create_or_get_users(request):
@@ -113,7 +111,6 @@ def login_user(request):
         print(e)
 
 
-
 @csrf_exempt
 def add_question(request):
     """Add a new question to database"""
@@ -149,6 +146,7 @@ def add_question(request):
             return JsonResponse({'error': 'Bad request - Missed or incorrect params'}, status=400)
 
 
+
 @csrf_exempt
 def get_user(request, name):
     """Get specific user info"""
@@ -169,5 +167,51 @@ def get_user(request, name):
     except:
         return HttpResponse("User not found", status=404)
 
-
     return JsonResponse({"username": user.username, "elo": user.elo, "eloPlanet": user.id_league.name, "editable": False}, status=200)
+
+
+
+
+
+@csrf_exempt
+def password_recovery(request):
+    """Forgot password, send an email with recovery code generated"""
+
+    if request.method != 'PUT':
+        return HttpResponse("Method Not Allowed", status=405)
+
+    data = json.loads(request.body)
+    user = User()
+
+    if not "email" in data:
+        return HttpResponse("Bad Request - Forget or incorrect params", status=400)
+
+    try:
+        user = User.objects.get(email=data['email'])
+    except:
+        return HttpResponse("Email not found", status=404)
+
+    # Generate a code that is not in db
+    while True:
+        try:
+            code = str(random.randint(100000, 999999)) # 6 digits number 
+            User.objects.get(tokenpass=code)
+        except:
+            break
+
+    # SAVE TOKEN PASS
+    user.tokenpass = code
+    user.save()
+    
+    # SEND EMAIL
+    subject = 'Qniverse Password Reset'
+    message = f'''
+    \nClick in the next link to reset your password:
+    \n
+    https://qniverse.com/update-password/{code}
+    '''
+    from_email = 'qniverseemail@gmail.com'
+    recipient_list = [data["email"]]
+    send_mail(subject, message, from_email, recipient_list)
+
+    return HttpResponse("Email sent successfully", status=200)
