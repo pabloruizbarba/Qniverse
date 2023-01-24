@@ -1,6 +1,6 @@
 from django.http import HttpResponse, JsonResponse
 import jwt
-from webserviceapp.models import User, League, Question
+from webserviceapp.models import User, League, Question, Ratequestion
 from django.views.decorators.csrf import csrf_exempt
 import json
 import bcrypt
@@ -230,3 +230,47 @@ def password_recovery(request):
     send_mail(subject, message, from_email, recipient_list)
 
     return HttpResponse("Email sent successfully", status=200)
+
+
+@csrf_exempt
+def question_vote(request, question_id):
+    """Vote a question"""
+
+    data = json.loads(request.body)
+
+    if not "rating" in data or question_id <= 0:
+        return HttpResponse("Bad Request - Forget or incorrect params", status=400)
+
+    try:
+        user = User.objects.get(tokensession=request.headers.get('Auth-Token'))
+    except:
+        return HttpResponse("Unauthorized - User not logged", status=401)
+        
+    try:
+        question = Question.objects.get(id=question_id)
+    except:
+        return HttpResponse("Not found", status=404)
+
+    # Check if user already voted
+    if Ratequestion.objects.filter(id_user=user.id, id_question=question_id).exists():
+        return HttpResponse("Conflict - User already voted", status=409)
+
+    if data["rating"] == "True":
+        Ratequestion.objects.create(id_user=user, id_question=question,rating=True)
+    else:
+        Ratequestion.objects.create(id_user=user, id_question=question,rating=False)
+
+    upvotes = Ratequestion.objects.filter(id_question=question, rating=True).count()
+    downvotes = Ratequestion.objects.filter(id_question=question, rating=False).count()
+
+    question.upvotes = upvotes
+    question.downvotes = downvotes
+
+    if upvotes - downvotes >= 5:
+        question.activatedingame = True
+    else:
+        question.activatedingame = False
+
+    question.save()
+
+    return HttpResponse("Ok", status=200)
