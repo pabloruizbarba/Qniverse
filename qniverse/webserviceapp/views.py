@@ -236,6 +236,9 @@ def password_recovery(request):
 def question_vote(request, question_id):
     """Vote a question"""
 
+    if request.method != 'PUT':
+        return HttpResponse("Method Not Allowed", status=405)
+
     data = json.loads(request.body)
 
     if not "rating" in data or question_id <= 0:
