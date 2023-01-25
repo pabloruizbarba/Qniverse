@@ -6,6 +6,7 @@ from django.core.mail import send_mail
 import json
 import bcrypt
 from datetime import datetime
+import random
 
 @csrf_exempt
 def create_or_get_users(request):
@@ -206,8 +207,8 @@ def password_recovery(request):
     code = 0
 
     while True:
+        code = random.randint(100000, 999999) # 6 digits number
         try:
-            code = str(random.randint(100000, 999999)) # 6 digits number 
             User.objects.get(tokenpass=code)
         except:
             break
