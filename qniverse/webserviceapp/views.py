@@ -2,6 +2,7 @@ from django.http import HttpResponse, JsonResponse
 import jwt
 from webserviceapp.models import User, League, Question, Ratequestion
 from django.views.decorators.csrf import csrf_exempt
+from django.core.mail import send_mail
 import json
 import bcrypt
 from datetime import datetime
@@ -202,6 +203,8 @@ def password_recovery(request):
         return HttpResponse("Email not found", status=404)
 
     # Generate a code that is not in db
+    code = 0
+
     while True:
         try:
             code = str(random.randint(100000, 999999)) # 6 digits number 
