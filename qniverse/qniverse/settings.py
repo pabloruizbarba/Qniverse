@@ -54,6 +54,13 @@ MIDDLEWARE = [
 
 CORS_ORIGIN_ALLOW_ALL = True
 
+CORS_ALLOW_HEADERS = [
+    "Auth-Token",
+    "access-control-allow-origin",
+    "Access-Control-Allow-Headers",
+    "content-type"
+]
+
 ROOT_URLCONF = 'qniverse.urls'
 
 TEMPLATES = [
