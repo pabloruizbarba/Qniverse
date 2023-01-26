@@ -20,9 +20,8 @@ import webserviceapp.views as views
 from webserviceapp import views
 
 urlpatterns = [
-    path('v1/users/', views.register_user),
-    path('v1/sessions/', views.login_user),
     path('v1/questions/', views.add_question),
     path('v1/update-user/', views.update_user),
+    path('v1/questions-to-validate/', views.questions_to_validate),
     path('admin/', admin.site.urls),
 ]

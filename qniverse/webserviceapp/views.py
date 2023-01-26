@@ -1,87 +1,32 @@
 from django.http import HttpResponse, JsonResponse
 import jwt
-from webserviceapp.models import User, League, Question
+from webserviceapp.models import User, League, Question, Ratequestion
 from django.views.decorators.csrf import csrf_exempt
 import json
 import bcrypt
-
-
-@csrf_exempt
-def login_user(request):
-    """A registered user can login into the app"""
-
-    if request.method != 'POST':
-        return None
-
-    try:
-        data = json.loads(request.body)
-
-        if 'email' in data:
-            user = User.objects.get(email=data['email'])
-        elif 'username' in data:
-            user = User.objects.get(username=data['username'])
-        else:
-            return JsonResponse({'error': 'Missing parameters'}, status=400)
-
-        if user.check_password(data['password']):
-            token = jwt.encode({'user_id': user.id}, 'secret', algorithm='HS256')
-            user.tokenSession = token
-            user.save()
-            return JsonResponse(
-                {
-                    'session_token': user.tokensession,
-                    'elo': user.elo,
-                    'username': user.username
-                },
-                status=201
-            )
-
-        return JsonResponse({'error': 'Incorrect password'}, status=401)
-    except Exception as e:
-        print(e)
-
-
-@csrf_exempt
-def register_user(request):
-    """Register a new user in database"""
-
-    if request.method != "POST":
-        return None
-
-    try:
-        data = json.loads(request.body)
-
-        new_user = User()
-        new_user.username = data['username']
-        new_user.email = data['email']
-        new_user.pass_field = new_user.encrypt_password(data['password'])
-        new_user.id_league = League.objects.get(id=1)
-        new_user.elo = 0
-        new_user.creationdate = "17/01/2023"
-        new_user.save()
-
-        return JsonResponse({"created_user": "ok"}, status=201)
-    except Exception as e:
-        print(e)
-
+import random
 
 @csrf_exempt
 def add_question(request):
     """Add a new question to database"""
-    
+    # Get token from headers
     token = request.headers.get('Auth-Token')
+
     try: 
         data = json.loads(request.body)
     except json.decoder.JSONDecodeError:
-        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        return HttpResponse('Invalid JSON', status=400)
+    # Try to get token from database
     try:
         tokenDB = User.objects.get(tokensession=token)
-    except Exception as e: 
-        return JsonResponse({'error': 'Bad request - Missed or incorrect params'}, status=400)
+    except: 
+        return HttpResponse('Bad request - Missed or incorrect params', status=400)
+    #Check if token exists or both are equal   
     if not token or token != tokenDB.tokensession:
         # Invalid token, return 401 error
-        return JsonResponse({'error': 'Unauthorized - User not logged'}, status=401)
+        return HttpResponse('Unauthorized - User not logged', status=401)
     else:
+        # Check if repost is of type POST
         if request.method == 'POST':  
             question = Question() 
             question.id_user =  User.objects.get(id=data['id_user'])
@@ -95,18 +40,20 @@ def add_question(request):
             question.upvotes = 0
             question.downvotes = 0
             question.activatedingame = False
+            # Check if there is an image
             if 'image' in data:
                 question.image = data['image']
+            # Save changes
             question.save()
-            return JsonResponse({"Question created":"201"})
+            return HttpResponse("Question created", status=201)
         # If the request is not of type POST...
         else:
-            return JsonResponse({'error': 'Bad request - Missed or incorrect params'}, status=400)
+            return HttpResponse('Bad request - Missed or incorrect params', status=400)
 
 
 
 @csrf_exempt
-def updateUser(request):
+def update_user(request):
     """Update username"""
 
     data = json.loads(request.body)
@@ -115,21 +62,83 @@ def updateUser(request):
 
     # CHECK IF REQUEST IS PROPERLY FORMULATED
     if not "username" in data:
-        return JsonResponse({"status": "400", "description": "Bad Request - Forget or incorrect params"})
+        return HttpResponse('Bad request - Missed or incorrect params', status=400)
 
 
-    # CHECK IF USER IS LOG IN
+    # CHECK IF USER IS LOGGED IN
     try:
         user = User.objects.get(tokensession=request.headers.get('Auth-Token'))
     except:
-        return JsonResponse({"status": "401", "description": "Unauthorized - User not logged"})
+        return HttpResponse('Unauthorized - User not logged', status=401)
 
 
     # CHECK IF USER ALREADY EXISTS
-    if User.objects.get(username=data['username']):
-        return JsonResponse({"status": "409", "description": "Username already in use"})
+    try:
+        User.objects.get(username=data['username'])
+        return HttpResponse('Username already in use', status=409)
+
+    except:
+        user.username = data['username']
+        user.save()
+        return HttpResponse("Username updated successfully",status=200)
 
 
-    user.username = data['username']
-    user.save()
-    return JsonResponse({"status": "200", "description": "Updated successfully"})
+
+@csrf_exempt
+def questions_to_validate(request):
+    
+    """Get 4 questions from database"""
+
+    # CHECK IF USER IS LOGGED IN
+    try:
+        user=User.objects.get(tokensession=request.headers.get('Auth-Token'))  
+    except:
+        return HttpResponse("Unauthorized - User not logged", status=401)
+
+    # Check if method is POST
+    if request.method != 'POST':
+        HttpResponse("Method not allowed",status=405)
+    
+    # Get rates from current user
+    try:
+        rates = user.ratequestion_set.all()
+    #   rates = Ratequestion.objects.all(id_user=user.id)
+    except:
+        print("it dies here")
+        return HttpResponse("Unauthorized - User not logged", status=401)
+
+    
+    # Get previous questions
+    prev = json.loads(request.body).get('previus_questions',[])
+    """
+    prev = []
+    prev = data['previus_questions']
+    """
+    questions = Question.objects.all() # get all the questions in DataBase
+    response_questions = [] 
+    """
+    try:
+        rates = Ratequestion.objects.all() # get all data from table rateQuestion
+    except:
+        return HttpResponse("Unauthorized - User not logged", status=401)
+    """
+    for i in range(1,5):
+        # Save up to 4 info questions in a array
+        if i == len(questions): # check if there aren't more questions in DB
+            break
+        q = random.choice(questions)
+        index = int(q.id)
+    #    rate = rates[index].rating
+      
+        while index in rates.id_question or str(index) in str(prev) or q in response_questions:
+    #   while str(index) in str(prev) or q in response_questions:
+            q = random.choice(questions)
+            index = int(q.id)
+        #   rate = rates[index].rating
+        print("Index: ",index)
+
+        response_questions.append(q)
+        i=i+1
+    print(response_questions)
+    return HttpResponse("Questions received ( array of 4 elements )",status=200) # send questions in utf-8
+   
