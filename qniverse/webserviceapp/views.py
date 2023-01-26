@@ -232,6 +232,32 @@ def password_recovery(request):
 
 
 @csrf_exempt
+def restore_password(request):
+    """Change old password with a new one"""
+
+    if request.method != 'PUT':
+        return HttpResponse("Method Not Allowed", status=405)
+
+    data = json.loads(request.body)
+    user = User()
+
+    if not ("code" and "new-pass") in data:
+        return HttpResponse("Bad Request - Forget or incorrect params", status=400)
+
+    # Check if code is the same in db
+    try:
+        user = User.objects.get(tokenpass=data["code"])
+    except:
+        return HttpResponse("Bad Request - Forget or incorrect params", status=400)
+
+    # Update the new password
+    user.pass_field = data["new-pass"]
+    user.save()
+
+    return HttpResponse("Password updated succesfully", status=200)
+
+
+@csrf_exempt
 def question_vote(request, question_id):
     """Vote a question"""
 
