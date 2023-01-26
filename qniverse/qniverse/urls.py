@@ -25,6 +25,7 @@ urlpatterns = [
     path('v1/sessions', views.login_user),
     path('v1/questions', views.add_question),
     path('v1/password-recovery', views.password_recovery),
+    path('v1/restore-password', views.restore_password),
     path('admin/', admin.site.urls),
     path('v1/question-vote/<int:question_id>', views.question_vote),
 ]
