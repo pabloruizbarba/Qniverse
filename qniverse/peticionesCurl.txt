@@ -1,0 +1,12 @@
+
+/users
+
+POST
+curl -X POST localhost:8000/v1/users -H 'Content-Type: application/json' -d '{"username":"tilas", "email": "tilas@tilas.com", "password": "1234"}'
+
+
+GET
+curl -X GET localhost:25565/v1/users?username=q- -H 'Auth-Token: prueba'
+
+
+/users/{username}
