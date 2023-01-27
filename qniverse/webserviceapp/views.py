@@ -222,7 +222,7 @@ def password_recovery(request):
     message = f'''
     \nClick in the next link to reset your password:
     \n
-    https://qniverse.com/update-password/{code}
+    https://qniverse.com/restore-password/{code}
     '''
     from_email = 'qniverseemail@gmail.com'
     recipient_list = [data["email"]]
@@ -251,7 +251,7 @@ def restore_password(request):
         return HttpResponse("Bad Request - Forget or incorrect params", status=400)
 
     # Update the new password
-    user.pass_field = data["new-pass"]
+    user.pass_field = User.encrypt_password(data["new-pass"])
     user.save()
 
     return HttpResponse("Password updated succesfully", status=200)
