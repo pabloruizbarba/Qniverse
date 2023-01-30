@@ -101,40 +101,27 @@ def questions_to_validate(request):
     
     # Get rates from current user
     try:
-        rates = user.ratequestion_set.all()
-    #   rates = Ratequestion.objects.all(id_user=user.id)
+        rates = Ratequestion.objects.filter(id_user=user.id)
     except:
-        print("it dies here")
         return HttpResponse("Unauthorized - User not logged", status=401)
 
-    
     # Get previous questions
     prev = json.loads(request.body).get('previus_questions',[])
-    """
-    prev = []
-    prev = data['previus_questions']
-    """
+ 
     questions = Question.objects.all() # get all the questions in DataBase
     response_questions = [] 
-    """
-    try:
-        rates = Ratequestion.objects.all() # get all data from table rateQuestion
-    except:
-        return HttpResponse("Unauthorized - User not logged", status=401)
-    """
+
     for i in range(1,5):
         # Save up to 4 info questions in a array
         if i == len(questions): # check if there aren't more questions in DB
             break
         q = random.choice(questions)
         index = int(q.id)
-    #    rate = rates[index].rating
       
-        while index in rates.id_question or str(index) in str(prev) or q in response_questions:
+        while index in rates or str(index) in str(prev) or q in response_questions:
     #   while str(index) in str(prev) or q in response_questions:
             q = random.choice(questions)
             index = int(q.id)
-        #   rate = rates[index].rating
         print("Index: ",index)
 
         response_questions.append(q)
