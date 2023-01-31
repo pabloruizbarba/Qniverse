@@ -168,7 +168,7 @@ def get_user(request, name):
 
     # CHECK IF USER IS LOG IN
     try:
-        User.objects.get(tokensession=request.headers.get('Auth-Token'))
+        user_logged = User.objects.get(tokensession=request.headers.get('Auth-Token'))
     except:
         return HttpResponse("Unauthorized - User not logged", status=401)
 
@@ -179,7 +179,12 @@ def get_user(request, name):
     except:
         return HttpResponse("User not found", status=404)
 
-    return JsonResponse({"username": user.username, "elo": user.elo, "eloPlanet": user.id_league.name, "editable": False}, status=200)
+    editable = False
+
+    if user_logged == user:
+        editable = True
+
+    return JsonResponse({"username": user.username, "elo": user.elo, "eloPlanet": user.id_league.name, "editable": editable}, status=200)
 
 
 
