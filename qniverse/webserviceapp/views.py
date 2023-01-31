@@ -124,8 +124,20 @@ def questions_to_validate(request):
         while index in rates or str(index) in str(prev) or q in response_questions:
             q = random.choice(questions)
             index = int(q.id)
-
-        response_questions.append(q)
+        question = {
+            "id": q.id,
+            "description": q.description,
+            "answer1": q.answer1,
+            "answer2": q.answer2,
+            "answer3": q.answer3,
+            "answer4": q.answer4,
+            "correctAnswer": q.correctanswer,
+            "image": q.image if q.image else "",
+            "upVotes": q.upvotes,
+            "downVotes": q.downvotes,
+            "activatedInGame": q.activatedingame
+        }
+        response_questions.append(question)
         i=i+1
-    return JsonResponse(response_questions,status=200) # send questions in utf-8
+    return JsonResponse(response_questions,json_dumps_params('ensure_ascii':False), safe=False,status=200) 
    
