@@ -5,8 +5,9 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.mail import send_mail
 import json
 import bcrypt
-from datetime import datetime
 import random
+from datetime import datetime
+
 
 @csrf_exempt
 def create_or_get_users(request):
@@ -79,115 +80,38 @@ def create_or_get_users(request):
             return HttpResponse("Bad Request - Forget or incorrect params", status=400)
 
 
-
 @csrf_exempt
-def login_user(request):
-    """Create a session"""
+def update_user(request):
+    """Update username"""
+    #CHECK IF METHOD IS POST
+    if request.method != 'POST':
+        HttpResponse("Method not allowed",status=405)
 
     data = json.loads(request.body)
     user = User()
 
-    if request.method != 'POST':
-        return HttpResponse("Method Not Allowed", status=405)
 
     # CHECK IF REQUEST IS PROPERLY FORMULATED
-    if not "username" in data or not "password" in data:
-        return HttpResponse("Bad Request - Forget or incorrect params", status=400)
-    
-
-    # IF REQUEST IS WITH USERNAME
-    try:
-        User.objects.get(username=data["username"])
-
-        user = User.objects.get(username=data["username"])
-        if user.check_password(data['password']):
-            user.tokensession = jwt.encode({'user_id': user.id}, 'secret', algorithm='HS256')
-            user.save()
-
-            return JsonResponse({"username": user.username, "elo": user.elo, "session_token": user.tokensession}, status=201)
-        else:
-            return HttpResponse("Incorrect password", status=401)
-    except:
-
-
-        # IF REQUEST IS WITH EMAIL
-        try:
-            User.objects.get(email=data["username"])
-
-            user = User.objects.get(email=data["username"])
-            if user.check_password(data['password']):
-                user.tokensession = jwt.encode({'user_id': user.id}, 'secret', algorithm='HS256')
-                user.save()
-
-                return JsonResponse({"username": user.username, "elo": user.elo, "session_token": user.tokensession}, status=201)
-            else:
-                return HttpResponse("Incorrect password", status=401)
-
-        except:
-            return HttpResponse("User or email dont exists", status=404)
-
-
-
-@csrf_exempt
-def add_question(request):
-    """Add a new question to database"""
-    
-    if request.method != 'POST':
-        return HttpResponse("Method Not Allowed", status=405)
-
-    # CHECK IF USER IS LOG IN
-    try:
-        token = User.objects.get(tokensession=request.headers.get('Auth-Token'))
-        data = json.loads(request.body)
-    except:
-        return HttpResponse("Unauthorized - User not logged", status=401)
-
-    try:
-        question = Question() 
-        question.id_user =  User.objects.get(tokensession=token.tokensession)
-        question.description = data['description']
-        question.answer1 = data['answer1']
-        question.answer2 = data['answer2']
-        question.answer3 = data['answer3']
-        question.answer4 = data['answer4']
-        question.correctanswer = data['correctAnswer']
-        question.image = data["image"] if "image" in data else None
-        question.save()
-        return HttpResponse("Question created", status=201)
-    except:
+    if not "username" in data:
         return HttpResponse('Bad request - Missed or incorrect params', status=400)
 
 
-
-@csrf_exempt
-def get_user(request, name):
-    """Get specific user info"""
-
-    if request.method != 'GET':
-        return HttpResponse("Method Not Allowed", status=405)
-
-    # CHECK IF USER IS LOG IN
+    # CHECK IF USER IS LOGGED IN
     try:
-        user_logged = User.objects.get(tokensession=request.headers.get('Auth-Token'))
+        user = User.objects.get(tokensession=request.headers.get('Auth-Token'))
     except:
-        return HttpResponse("Unauthorized - User not logged", status=401)
+        return HttpResponse('Unauthorized - User not logged', status=401)
 
 
-    # CHECK IF USER EXIST IN DATABASE
+    # CHECK IF USER ALREADY EXISTS
     try:
-        user = User.objects.get(username=name)
+        User.objects.get(username=data['username'])
+        return HttpResponse('Username already in use', status=409)
+
     except:
-        return HttpResponse("User not found", status=404)
-
-    editable = False
-
-    if user_logged == user:
-        editable = True
-
-    return JsonResponse({"username": user.username, "elo": user.elo, "eloPlanet": user.id_league.name, "editable": editable}, status=200)
-
-
-
+        user.username = data['username']
+        user.save()
+        return HttpResponse("Username updated successfully",status=200)
 
 
 @csrf_exempt
@@ -260,6 +184,165 @@ def restore_password(request):
     user.save()
 
     return HttpResponse("Password updated succesfully", status=200)
+
+@csrf_exempt
+def get_user(request, name):
+    """Get specific user info"""
+
+    if request.method != 'GET':
+        return HttpResponse("Method Not Allowed", status=405)
+
+    # CHECK IF USER IS LOG IN
+    try:
+        user_logged = User.objects.get(tokensession=request.headers.get('Auth-Token'))
+    except:
+        return HttpResponse("Unauthorized - User not logged", status=401)
+
+
+    # CHECK IF USER EXIST IN DATABASE
+    try:
+        user = User.objects.get(username=name)
+    except:
+        return HttpResponse("User not found", status=404)
+
+    editable = False
+
+    if user_logged == user:
+        editable = True
+
+    return JsonResponse({"username": user.username, "elo": user.elo, "eloPlanet": user.id_league.name, "editable": editable}, status=200)
+
+
+@csrf_exempt
+def login_user(request):
+    """Create a session"""
+
+    data = json.loads(request.body)
+    user = User()
+
+    if request.method != 'POST':
+        return HttpResponse("Method Not Allowed", status=405)
+
+    # CHECK IF REQUEST IS PROPERLY FORMULATED
+    if not "username" in data or not "password" in data:
+        return HttpResponse("Bad Request - Forget or incorrect params", status=400)
+    
+    # IF REQUEST IS WITH USERNAME
+    try:
+        User.objects.get(username=data["username"])
+
+        user = User.objects.get(username=data["username"])
+        if user.check_password(data['password']):
+            user.tokensession = jwt.encode({'user_id': user.id}, 'secret', algorithm='HS256')
+            user.save()
+
+            return JsonResponse({"username": user.username, "elo": user.elo, "session_token": user.tokensession}, status=201)
+        else:
+            return HttpResponse("Incorrect password", status=401)
+    except:
+
+    # IF REQUEST IS WITH EMAIL
+    try:
+        User.objects.get(email=data["username"])
+
+        user = User.objects.get(email=data["username"])
+        if user.check_password(data['password']):
+            user.tokensession = jwt.encode({'user_id': user.id}, 'secret', algorithm='HS256')
+            user.save()
+
+            return JsonResponse({"username": user.username, "elo": user.elo, "session_token": user.tokensession}, status=201)
+        else:
+            return HttpResponse("Incorrect password", status=401)
+
+    except:
+        return HttpResponse("User or email dont exists", status=404)
+
+
+@csrf_exempt
+def add_question(request):
+    """Add a new question to database"""
+    
+    if request.method != 'POST':
+        return HttpResponse("Method Not Allowed", status=405)
+
+    # CHECK IF USER IS LOG IN
+    try:
+        token = User.objects.get(tokensession=request.headers.get('Auth-Token'))
+        data = json.loads(request.body)
+    except:
+        return HttpResponse("Unauthorized - User not logged", status=401)
+
+    try:
+        question = Question() 
+        question.id_user =  User.objects.get(tokensession=token.tokensession)
+        question.description = data['description']
+        question.answer1 = data['answer1']
+        question.answer2 = data['answer2']
+        question.answer3 = data['answer3']
+        question.answer4 = data['answer4']
+        question.correctanswer = data['correctAnswer']
+        question.image = data["image"] if "image" in data else None
+        question.save()
+        return HttpResponse("Question created", status=201)
+    except:
+        return HttpResponse('Bad request - Missed or incorrect params', status=400)
+
+
+@csrf_exempt
+def questions_to_validate(request):
+    
+    """Get 4 questions from database"""
+
+    # CHECK IF USER IS LOGGED IN
+    try:
+        user=User.objects.get(tokensession=request.headers.get('Auth-Token'))  
+    except:
+        return HttpResponse("Unauthorized - User not logged", status=401)
+
+    # Check if method is POST
+    if request.method != 'POST':
+        HttpResponse("Method not allowed",status=405)
+    
+    # Get rates from current user
+    try:
+        rates = Ratequestion.objects.filter(id_user=user.id)
+    except:
+        return HttpResponse("Unauthorized - User not logged", status=401)
+
+    # Get previous questions
+    prev = json.loads(request.body).get('previus_questions',[])
+ 
+    questions = Question.objects.all() # get all the questions in DataBase
+    response_questions = [] 
+    response_q = []
+    for i in range(1,5):
+        # Save up to 4 info questions in a array
+        if i == len(questions): # check if there aren't more questions in DB
+            break
+        q = random.choice(questions)
+        index = int(q.id)
+      
+        while index in rates or str(index) in str(prev) or q in response_q:
+            q = random.choice(questions)
+            index = int(q.id)
+        
+        question = {
+            "id": q.id,
+            "description": q.description,
+            "answer1": q.answer1,
+            "answer2": q.answer2,
+            "answer3": q.answer3,
+            "answer4": q.answer4,
+            "correctAnswer": q.correctanswer,
+            "image": q.image if q.image else "",
+            "upVotes": q.upvotes,
+            "downVotes": q.downvotes,
+            "activatedInGame": q.activatedingame
+        }
+        response_q.append(q)
+        response_questions.append(question)
+        i=i+1
+    return JsonResponse(response_questions,json_dumps_params={'ensure_ascii':False}, safe=False,status=200) 
 
 
 @csrf_exempt
