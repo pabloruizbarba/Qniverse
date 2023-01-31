@@ -139,5 +139,5 @@ def questions_to_validate(request):
         }
         response_questions.append(question)
         i=i+1
-    return JsonResponse(response_questions,json_dumps_params('ensure_ascii':False), safe=False,status=200) 
+    return JsonResponse(response_questions,json_dumps_params={'ensure_ascii':False}, safe=False,status=200) 
    
