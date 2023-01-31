@@ -55,8 +55,8 @@ def add_question(request):
 @csrf_exempt
 def update_user(request):
     """Update username"""
-    #CHECK IF METHOD IS PUT
-    if request.method != 'PUT':
+    #CHECK IF METHOD IS POST
+    if request.method != 'POST':
         HttpResponse("Method not allowed",status=405)
 
     data = json.loads(request.body)
