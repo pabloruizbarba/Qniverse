@@ -83,7 +83,7 @@ def update_user(request):
     """Update username"""
     #CHECK IF METHOD IS POST
     if request.method != 'POST':
-        HttpResponse("Method not allowed",status=405)
+        return HttpResponse("Method not allowed",status=405)
 
     data = json.loads(request.body)
     user = User()
