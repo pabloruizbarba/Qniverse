@@ -21,7 +21,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     # Users
     path('v1/users', views.create_or_get_users),
-    path('v1/update-user/', views.update_user),
+    path('v1/update-user', views.update_user),
     path('v1/password-recovery', views.password_recovery),
     path('v1/restore-password', views.restore_password),
     path('v1/users/<str:name>', views.get_user),
