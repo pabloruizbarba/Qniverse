@@ -113,7 +113,7 @@ def questions_to_validate(request):
  
     questions = Question.objects.all() # get all the questions in DataBase
     response_questions = [] 
-
+    response_q = []
     for i in range(1,5):
         # Save up to 4 info questions in a array
         if i == len(questions): # check if there aren't more questions in DB
@@ -121,9 +121,10 @@ def questions_to_validate(request):
         q = random.choice(questions)
         index = int(q.id)
       
-        while index in rates or str(index) in str(prev) or q in response_questions:
+        while index in rates or str(index) in str(prev) or q in response_q:
             q = random.choice(questions)
             index = int(q.id)
+        
         question = {
             "id": q.id,
             "description": q.description,
@@ -137,6 +138,7 @@ def questions_to_validate(request):
             "downVotes": q.downvotes,
             "activatedInGame": q.activatedingame
         }
+        response_q.append(q)
         response_questions.append(question)
         i=i+1
     return JsonResponse(response_questions,json_dumps_params={'ensure_ascii':False}, safe=False,status=200) 
