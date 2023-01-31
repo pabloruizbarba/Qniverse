@@ -17,8 +17,6 @@ from django.contrib import admin
 from django.urls import path
 import webserviceapp.views as views
 
-from webserviceapp import views
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     # Users

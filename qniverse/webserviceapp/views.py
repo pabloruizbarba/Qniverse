@@ -12,10 +12,8 @@ from datetime import datetime
 @csrf_exempt
 def create_or_get_users(request):
     """ 
-
     1- Register a user in database
     2- Get a list of users who start with (request)
-
     """
 
     if request.method != 'POST' and request.method != 'GET':
@@ -240,22 +238,21 @@ def login_user(request):
         else:
             return HttpResponse("Incorrect password", status=401)
     except:
+        # IF REQUEST IS WITH EMAIL
+        try:
+            User.objects.get(email=data["username"])
 
-    # IF REQUEST IS WITH EMAIL
-    try:
-        User.objects.get(email=data["username"])
+            user = User.objects.get(email=data["username"])
+            if user.check_password(data['password']):
+                user.tokensession = jwt.encode({'user_id': user.id}, 'secret', algorithm='HS256')
+                user.save()
 
-        user = User.objects.get(email=data["username"])
-        if user.check_password(data['password']):
-            user.tokensession = jwt.encode({'user_id': user.id}, 'secret', algorithm='HS256')
-            user.save()
+                return JsonResponse({"username": user.username, "elo": user.elo, "session_token": user.tokensession}, status=201)
+            else:
+                return HttpResponse("Incorrect password", status=401)
 
-            return JsonResponse({"username": user.username, "elo": user.elo, "session_token": user.tokensession}, status=201)
-        else:
-            return HttpResponse("Incorrect password", status=401)
-
-    except:
-        return HttpResponse("User or email dont exists", status=404)
+        except:
+            return HttpResponse("User or email dont exists", status=404)
 
 
 @csrf_exempt
