@@ -127,5 +127,5 @@ def questions_to_validate(request):
 
         response_questions.append(q)
         i=i+1
-    return HttpResponse("Questions received ( array of 4 elements )",status=200) # send questions in utf-8
+    return JsonResponse(response_questions,status=200) # send questions in utf-8
    
