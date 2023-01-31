@@ -119,13 +119,10 @@ def questions_to_validate(request):
         index = int(q.id)
       
         while index in rates or str(index) in str(prev) or q in response_questions:
-    #   while str(index) in str(prev) or q in response_questions:
             q = random.choice(questions)
             index = int(q.id)
-        print("Index: ",index)
 
         response_questions.append(q)
         i=i+1
-    print(response_questions)
     return HttpResponse("Questions received ( array of 4 elements )",status=200) # send questions in utf-8
    
