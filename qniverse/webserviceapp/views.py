@@ -68,7 +68,7 @@ def create_or_get_users(request):
 
         print(request.GET.get('username'))
         try:
-            users = User.objects.filter(username__startswith=request.GET.get('username'))
+            users = User.objects.filter(username__istartswith=request.GET.get('username'))
 
             for user in users:
                 usersA.append(user.username)
