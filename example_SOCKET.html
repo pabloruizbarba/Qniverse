@@ -1,0 +1,45 @@
+<html>
+	<head>
+		<script>
+			var socket;
+			
+			document.addEventListener("DOMContentLoaded", () => {
+				socket = new WebSocket('ws://server.borrageiros.com:8000/ws/public_lobby/');
+				
+				// Fired when a connection with a WebSocket is opened
+				socket.onopen = function () {
+					socket.send(JSON.stringify({"customMessage": "Hello"}))
+				};
+				
+				// Fired when data is received through a WebSocket
+				socket.onmessage = function(event) {
+					document.getElementById("serverReplyDiv").innerHTML = event.data;
+				};
+				
+				socket.onclose = function(event) {
+					// TO-DO 
+				};
+				
+				socket.onerror = function(event) {
+					// TO-DO
+				};
+			})
+			
+			const onClickButton1 = () => {
+				socket.send(JSON.stringify({"answer": "a"}))
+			}
+			const onClickButton2 = () => {
+				socket.send(JSON.stringify({"answer": "b"}))
+			}
+		</script>
+	</head>
+	<body>
+		<h1>HELLO</h1>
+		<h3>This is a question bla bla bla. Please, choose an answer</h3>
+		
+		<button onclick="onClickButton1()">Choose A</button>
+		<button onclick="onClickButton2()">Choose B</button>
+		<h2>You'll find here an asynchronous response from the server</h2>
+		<div id="serverReplyDiv">Bla bla.</div>
+	</body>
+</html>

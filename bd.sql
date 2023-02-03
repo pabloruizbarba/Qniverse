@@ -91,11 +91,6 @@ insert into League values(6, "Saturn", 6000);
 insert into League values(7, "Uranus", 7000);
 insert into League values(8, "Neptune", 8000);
 
-insert into User values(0, 3, "q-angel", "angel@angel.angel", "qniverse", "1234", "1234", 3000, "17/01/2023");
-insert into User values(0, 3, "q-cesar", "cesar@cesar.cesar", "qniverse", "1234", "1234", 3000, "17/01/2023");
-insert into User values(0, 3, "q-pablo", "pablo@pablo.pablo", "qniverse", "1234", "1234", 3000, "17/01/2023");
-insert into User values(0, 3, "q-adrian", "adrian@adrian.adrian", "qniverse", "1234", "1234", 3000, "17/01/2023");
-
 insert into Question values(1, 1, "Cuánto es 5+5", "10", "5", "15", "20", 1, null, 10, 5, True);
 insert into Question values(2, 2, "Qué hecho histórico corresponde al día D?", "Desembarco de Normandía", "Liberarión de París", "Rendición de los Nazis", "Bombardeo sobre Londres", 1, null, 5, 5, False);
 insert into Question values(3, 3, "Qué líquido suele ser utilizado para purificar cañerías tapadas?", "Alcohol etílico", "Ácido Hialuronico", "Manaos", "Soda cáustica", 3, null, 10, 5, True);
