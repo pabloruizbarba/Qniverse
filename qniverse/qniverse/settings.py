@@ -31,6 +31,7 @@ ALLOWED_HOSTS = ["*"]
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'webserviceapp.apps.WebserviceappConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -39,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'corsheaders',
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -52,14 +54,7 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
 ]
 
-CORS_ORIGIN_ALLOW_ALL = True
 
-CORS_ALLOW_HEADERS = [
-    "Auth-Token",
-    "access-control-allow-origin",
-    "Access-Control-Allow-Headers",
-    "content-type"
-]
 
 ROOT_URLCONF = 'qniverse.urls'
 
@@ -136,6 +131,14 @@ STATIC_URL = 'static/'
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
+
+
+
+
+
+
+
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 PASSWORD_HASHERS = [
@@ -143,6 +146,23 @@ PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.PBKDF2PasswordHasher',
     'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
     'django.contrib.auth.hashers.Argon2PasswordHasher',
+]
+
+
+
+
+
+########################### ADDED BY PACA
+
+
+# CORS
+CORS_ORIGIN_ALLOW_ALL = True
+
+CORS_ALLOW_HEADERS = [
+    "Auth-Token",
+    "access-control-allow-origin",
+    "Access-Control-Allow-Headers",
+    "content-type"
 ]
 
 # EMAIL
@@ -155,3 +175,6 @@ EMAIL_HOST_USER="qniverseemail"
 EMAIL_HOST_PASSWORD="almjaerffdpkgxyi"
 
 # real password for loggin in gmail `qniverse12.` (without quotes)
+
+
+ASGI_APPLICATION = 'qniverse.asgi.application'
