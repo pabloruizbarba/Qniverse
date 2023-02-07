@@ -1,0 +1,29 @@
+-- CREATE A NEW USER
+curl -X POST localhost:8000/v1/users/ -H 'Content-Type: application/json' -d '{"username":"tilas", "email": "tilas@tilas.com", "password": "1234"}'
+
+-- UPDATE USER
+curl -X POST localhost:8000/v1/update-user/ -H 'Content-Type: application/json' -H 'Auth-Token: prueba' -d '{"username":"carlos"}'
+
+-- FORGOT password
+curl -X POST localhost:8000/v1/forgot-password/ -H 'Content-Type: application/json' -d '{"email":"adrianborrageirosmourelos@gmail.com"}'
+
+-- UPDATE PASSWORD
+curl -X POST localhost:8000/v1/password-recovery/ -H 'Content-Type: application/json' -d '{"token-pass":"prueba", "new-pass":"carlos1324"}'
+
+-- GET users
+curl -X GET localhost:8000/v1/get-users/q- -H 'Auth-Token: prueba'
+
+-- GET SPECIFIC USER
+curl -X GET localhost:8000/v1/get-user/q-pablo -H 'Auth-Token: prueba'
+
+-- CREATE A NEW SESSION
+curl -X POST localhost:8000/v1/sessions/ -H 'Content-Type: application/json' -d '{"username":"carlos", "password":"carlos1324"}'
+
+-- CREATE A NEW QUESTION
+curl -X POST localhost:8000/v1/questions/ -H 'Content-Type: application/json' -H 'Auth-Token: prueba' -d '{"question": "PRUEBA?", "answerA": "Opcion1", "answerB": "Opcion2", "answerC": "Opcion3", "answerD": "Opcion4", "correct-answer": "3", "question-image": ""}'
+
+-- GET 4 QUESTIONS INFO
+curl -X POST localhost:8000/v1/questions-to-validate/ -H 'Content-Type: application/json' -H 'Auth-Token: prueba' -d '{"index_question":"1"}'
+
+-- VOTE A QUESTION
+curl -X POST localhost:8000/v1/question-vote/1 -H 'Content-Type: application/json' -H 'Auth-Token: prueba' -d '{"rating": "True"}'
