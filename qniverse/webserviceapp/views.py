@@ -387,3 +387,48 @@ def question_vote(request, question_id):
     question.save()
 
     return HttpResponse("Ok", status=200)
+
+
+@csrf_exempt
+def recive_questions(request):
+    """ Get a number of questions 
+    
+        Query parameters:
+            - total: number of questions getted
+    """
+
+    if request.method != 'GET':
+        return HttpResponse("Method Not Allowed", status=405)
+
+    try:
+        total = request.GET["total"]
+        activated_questions = Question.objects.filter(activatedingame=1)
+        random_questions = random.sample(list(activated_questions), int(total))
+        questions_dict = {"questions": {}}
+
+        questions = []
+
+        for q in random_questions :
+            question = {
+                "id": q.id,
+                "description": q.description,
+                "answer1": q.answer1,
+                "answer2": q.answer2,
+                "answer3": q.answer3,
+                "answer4": q.answer4,
+                "correctAnswer": q.correctanswer,
+                "image": q.image if q.image else "",
+            }
+
+            questions.append(question)
+
+        questions_dict["questions"] = questions
+    except:
+        return HttpResponse("Bad Request - Missing path parameters", status=400)
+
+    return JsonResponse(
+        questions_dict,
+        json_dumps_params={'ensure_ascii': False},
+        safe=False,
+        status=200
+    ) 

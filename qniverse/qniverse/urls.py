@@ -31,4 +31,5 @@ urlpatterns = [
     path('v1/questions', views.add_question),
     path('v1/questions-to-validate/', views.questions_to_validate),
     path('v1/question-vote/<int:question_id>', views.question_vote),
+    path('v1/recive-questions', views.recive_questions),
 ]
