@@ -29,8 +29,10 @@ CREATE TABLE Lobby (
     creationDate VARCHAR(100),
     privateCode TEXT,
     visibility INTEGER,
-    id_user INTEGER NOT NULL,
-    FOREIGN KEY (id_user) REFERENCES User(id)
+    id_user_1 INTEGER,
+    id_user_2 INTEGER
+    -- FOREIGN KEY (id_user_1) REFERENCES User(id),
+    -- FOREIGN KEY (id_user_2) REFERENCES User(id)
 );
 
 
@@ -52,16 +54,18 @@ create table Question(
 
 
 CREATE TABLE Game(
-    id_user INTEGER NOT NULL,
+    id_user_1 INTEGER,
+    id_user_2 INTEGER,
     id_lobby INTEGER NOT NULL,
     id_question INTEGER NOT NULL,
     time VARCHAR(100),
     success INTEGER,
-    FOREIGN KEY (id_user) REFERENCES User(id),
+    -- FOREIGN KEY (id_user_1) REFERENCES User(id),
+    -- FOREIGN KEY (id_user_2) REFERENCES User(id),
     FOREIGN KEY (id_lobby) REFERENCES Lobby(id),
     FOREIGN KEY (id_question) REFERENCES Question(id)
 );
-ALTER TABLE Game ADD CONSTRAINT game_id PRIMARY KEY (id_user, id_lobby,id_question);
+ALTER TABLE Game ADD CONSTRAINT id PRIMARY KEY (id_user_1, id_user_2, id_lobby);
 
 
 create table rateQuestion(
@@ -91,7 +95,6 @@ insert into League values(6, "Saturn", 6000);
 insert into League values(7, "Uranus", 7000);
 insert into League values(8, "Neptune", 8000);
 
-insert into Question values(1, 1, "Cuánto es 5+5", "10", "5", "15", "20", 1, null, 10, 5, True);
-insert into Question values(2, 2, "Qué hecho histórico corresponde al día D?", "Desembarco de Normandía", "Liberarión de París", "Rendición de los Nazis", "Bombardeo sobre Londres", 1, null, 5, 5, False);
-insert into Question values(3, 3, "Qué líquido suele ser utilizado para purificar cañerías tapadas?", "Alcohol etílico", "Ácido Hialuronico", "Manaos", "Soda cáustica", 3, null, 10, 5, True);
-insert into Question values(4, 4, "Qué celebran los cristianos el 25 de diciembre?", "La muerte de Jesús", "El nacimiento de Jesús", "La resurreción de Jesús", "La crucifixión de Jesús", 2, null, 15, 5, True);
+-- insert into Question values(2, 2, "Qué hecho histórico corresponde al día D?", "Desembarco de Normandía", "Liberarión de París", "Rendición de los Nazis", "Bombardeo sobre Londres", 1, null, 5, 5, False);
+-- insert into Question values(3, 3, "Qué líquido suele ser utilizado para purificar cañerías tapadas?", "Alcohol etílico", "Ácido Hialuronico", "Manaos", "Soda cáustica", 3, null, 10, 5, True);
+-- insert into Question values(4, 4, "Qué celebran los cristianos el 25 de diciembre?", "La muerte de Jesús", "El nacimiento de Jesús", "La resurreción de Jesús", "La crucifixión de Jesús", 2, null, 15, 5, True);

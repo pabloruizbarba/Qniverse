@@ -28,7 +28,6 @@ application = ProtocolTypeRouter({
     "websocket": AllowedHostsOriginValidator(
         AuthMiddlewareStack(
             URLRouter([
-                path("ws/lobby/", public_lobby.PublicLobbyConsumer.as_asgi()),
                 path("ws/search_or_create_game/", public_lobby.CreateOrSearchGame.as_asgi()),
             ])
         )

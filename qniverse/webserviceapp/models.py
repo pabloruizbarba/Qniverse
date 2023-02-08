@@ -9,7 +9,8 @@ from django.db import models
 import bcrypt
 
 class Game(models.Model):
-    id_user = models.OneToOneField('User', models.DO_NOTHING, db_column='id_user', primary_key=True)
+    id_user_1 = models.IntegerField(primary_key=True)
+    id_user_2 = models.IntegerField()
     id_lobby = models.ForeignKey('Lobby', models.DO_NOTHING, db_column='id_lobby')
     id_question = models.ForeignKey('Question', models.DO_NOTHING, db_column='id_question')
     time = models.CharField(max_length=100, blank=True, null=True)
@@ -18,7 +19,7 @@ class Game(models.Model):
     class Meta:
         managed = False
         db_table = 'Game'
-        unique_together = (('id_user', 'id_lobby', 'id_question'),)
+        unique_together = (('id_user_1', 'id_user_2', 'id_lobby'),)
 
 
 class League(models.Model):
@@ -34,7 +35,8 @@ class Lobby(models.Model):
     creationdate = models.CharField(db_column='creationDate', max_length=100, blank=True, null=True)  # Field name made lowercase.
     privatecode = models.TextField(db_column='privateCode', blank=True, null=True)  # Field name made lowercase.
     visibility = models.IntegerField(blank=True, null=True)
-    id_user = models.ForeignKey('User', models.DO_NOTHING, db_column='id_user')
+    id_user_1 = models.IntegerField(blank=True, null=True)
+    id_user_2 = models.IntegerField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -78,7 +80,6 @@ class User(models.Model):
 
     def check_password(self, raw_password):
         return bcrypt.checkpw(raw_password.encode('utf-8'), self.pass_field.encode('utf-8'))
-
 
 
 class Ratequestion(models.Model):
