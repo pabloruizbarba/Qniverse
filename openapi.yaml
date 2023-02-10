@@ -1,0 +1,446 @@
+openapi: 3.0.3
+info:
+  title: Qniverse swagger
+  description: |-
+    Api de Qniverse
+  version: "1.0"
+paths:
+  /v1/users:
+    post:
+      tags:
+        - users
+      summary: Create a new user
+      description: Create a new user
+      parameters:
+        - name: username
+          in: query
+          description: The user name for register
+          required: true
+          schema:
+            type: string
+        - name: email
+          in: query
+          description: The email for register
+          required: true
+          schema:
+            type: string
+        - name: password
+          in: query
+          description: The password for register in clear text
+          required: true
+          schema:
+            type: string
+      responses:
+            '201':
+              description: User created
+            '400':
+              description: Bad Request - Forget or incorrect params
+            '405':
+              description: Method Not Allowed
+            '409':
+              description: Email or username already in use
+              
+  /v1/sessions:
+    post:
+      tags:
+        - session
+      summary: Create a new session
+      description: Create a new session
+      parameters:
+        - name: username or email
+          in: query
+          description: The user name for login
+          required: true
+          schema:
+            type: string
+        - name: password
+          in: query
+          description: The password for login in clear text
+          required: true
+          schema:
+            type: string
+      responses:
+            '201':
+              description: Created
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/Session' 
+            '400':
+              description: Bad Request - Forget or incorrect params
+            '401':
+              description: Incorrect password
+            '405':
+              description: Method Not Allowed
+              
+  /v1/update-user:
+    post:
+      tags:
+        - users
+      summary: Update a user
+      description: Update a user
+      parameters:
+        - name: sesion-token
+          in: header
+          description: Sesion token
+          required: true
+          schema:
+            type: string
+        - name: username
+          in: query
+          description: The user name to update (sesion token in local-storage is required)
+          required: true
+          schema:
+            type: string
+      responses:
+            '200':
+              description: Username updated successfully
+            '400':
+              description: Bad request - Missed or incorrect params
+            '401':
+              description: Unauthorized - User not logged
+            '405':
+              description: Method Not Allowed
+            '409':
+              description: Username already in use
+              
+  /v1/password-recovery:
+    post:
+      tags:
+        - users
+      summary: Password update request
+      description: Password update request
+      parameters:
+        - name: email
+          in: query
+          description: email
+          required: true
+          schema:
+            type: string
+      responses:
+            '200':
+              description: Email sent successfully
+            '404':
+              description: Email not found
+            '405':
+              description: Method Not Allowed
+            '400':
+              description: Bad Request - Forget or incorrect params
+              
+  /v1/restore-password:
+    post:
+      tags:
+        - users
+      summary: Update password
+      description: Update password
+      parameters:
+        - name: token-pass
+          in: query
+          description: token-pass from email
+          required: true
+          schema:
+            type: string
+        - name: new-pass
+          in: query
+          description: The new pass for the user
+          required: true
+          schema:
+            type: string
+      responses:
+            '200':
+              description: Password updated succesfully
+            '405':
+              description: Method Not Allowed
+            '400':
+              description: Bad Request - Forget or incorrect params
+              
+  /v1/users/{username}:
+    get:
+      tags:
+        - users
+      summary: Return a list of users matching with same name
+      description: Get a list of users
+      parameters:
+        - name: username
+          in: path
+          description: username
+          required: true
+          schema:
+            type: string
+      responses:
+            '200':
+              description: User getted
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/Users-names' 
+            '400':
+              description: Bad Request - Forget or incorrect params
+            '401':
+              description: Unauthorized - User not logged
+            '405':
+              description: Method Not Allowed
+              
+  /v1/questions:
+    post:
+      tags:
+        - questions
+      summary: Create a new question
+      description: Create a new question
+      parameters:
+        - name: question
+          in: query
+          description: The question
+          required: true
+          schema:
+            type: string
+        - name: answerA
+          in: query
+          description: The first answer
+          required: true
+          schema:
+            type: string
+        - name: answerB
+          in: query
+          description: The second answer
+          required: true
+          schema:
+            type: string
+        - name: answerC
+          in: query
+          description: The third answer
+          required: true
+          schema:
+            type: string
+        - name: answerD
+          in: query
+          description: The fourth answer
+          required: true
+          schema:
+            type: string
+        - name: correct-answer
+          in: query
+          description: The correct answer
+          required: true
+          schema:
+            type: string
+        - name: question-image
+          in: query
+          description: A image for a question
+          required: false
+          schema:
+            type: string
+      responses:
+            '201':
+              description: Question created
+            '400':
+              description: Bad request - Missed or incorrect params
+            '401':
+              description: Unauthorized - User not logged
+            '405':
+              description: Method Not Allowed
+
+  /v1/users/{name}:
+    get:
+      tags:
+        - users
+      summary: Get a especific user info
+      description: Get a especific user info
+      parameters:
+        - name: sesion-token
+          in: header
+          description: Sesion token
+          required: true
+          schema:
+            type: string
+        - name: name
+          in: path
+          description: username
+          required: true
+          schema:
+            type: string
+      responses:
+            '200':
+              description: User getted
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/User-info'
+            '401':
+              description: Unauthorized - User not logged
+            '404':
+              description: Not found
+            '405':
+              description: Method Not Allowed
+
+  /v1/questions-to-validate:
+    get:
+      tags:
+        - questions
+      summary: Get 4 questions info
+      description: Get 4 questions info
+      parameters:
+        - name: sesion-token
+          in: header
+          description: Sesion token
+          required: true
+          schema:
+            type: string
+      responses:
+            '200':
+              description: Questions getted ( array of 4 elements )
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/Questions-to-validate' 
+            '401':
+              description: Unauthorized - User not logged
+            '405':
+              description: Method Not Allowed
+  
+  /v1/questions-to-validate/{questionId}:
+    put:
+      tags:
+        - questions
+      summary: User vote a question
+      description: User vote a question
+      parameters:
+        - name: questionId
+          in: path
+          description: question id
+          required: true
+          schema:
+            type: string
+        - name: rating
+          in: query
+          description: The up or down vote
+          required: true
+          schema:
+            type: string
+            example: upvote/downvote
+      responses:
+            '200':
+              description: Ok 
+            '400':
+              description: Bad Request - Forget or incorrect params
+            '401':
+              description: Unauthorized - User not logged
+            '404':
+              description: Not found
+            '405':
+              description: Method Not Allowed
+            '409':
+              description: Conflict - User already voted
+              
+  /v1/recive-questions:
+    get:
+      tags:
+        - questions
+      summary: Get a number of questions
+      description: Get a number of questions for the users playing within a match.
+      parameters:
+        - name: total
+          in: query
+          description: Number of questions to send
+          required: true
+          schema:
+            type: integer
+            example: 10
+      responses:
+            '200':
+              description: Ok 
+            '400':
+              description: Bad Request - Forget or incorrect params
+            '405':
+              description: Method Not Allowed
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        username:
+          type: string
+          example: "Paco"
+        email:
+          type: string
+          example: "paco@paco.paco"
+        password:
+          type: string
+          example: "safasdcs"
+    Session:
+      type: object
+      properties:
+        session_token:
+          type: string
+          example: "skcvhwavcwrvwsdc"
+        elo:
+          type: integer
+          format: int64
+          example: 10
+        username:
+          type: string
+          example: "Paco"
+    Users-names:
+      type: object
+      properties:
+        users:
+          type: array
+          items:
+            type: string
+          example: ["Paco", "Pepe", "Pedro"]
+    User-info:
+      type: object
+      properties:
+        nick:
+          type: string
+          example: "Paco"
+        elo:
+          type: integer
+          format: int64
+          example: 30
+        eloPlanet:
+          type: string
+          example: "Mart"
+        editable:
+          type: boolean
+          example: false
+    Questions-to-validate:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: integer
+            format: int64
+            example: 1 
+          question:
+            type: string
+            example: "Qué viene después del 4"
+          answerA:
+            type: string
+            example: "1"
+          answerB:
+            type: string
+            example: "2"
+          answerC:
+            type: string
+            example: "5"
+          answerD:
+            type: string
+            example: "7"
+          correct-answer:
+            type: integer
+            format: int64
+            example: 3
+          image:
+            type: string
+            example: null
+          upvotes:
+            type: integer
+            format: int64
+            example: 10
+          downvotes:
+            type: integer
+            format: int64
+            example: 50
